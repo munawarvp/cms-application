@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 # Create your models here.
 
 class MyAccountManager(BaseUserManager):
-    def create_user(self, username, email, password=None):
+    def create_user(self, first_name, last_name, username, email, phone_number, password=None):
         if not email:
             raise ValueError('User must have an email address')
 
@@ -14,6 +14,9 @@ class MyAccountManager(BaseUserManager):
         user = self.model(
             email = self.normalize_email(email),
             username = username,
+            first_name = first_name,
+            last_name = last_name,
+            phone_number = phone_number
         )
 
         user.set_password(password)
@@ -40,13 +43,13 @@ class User(AbstractBaseUser):
     last_name = models.CharField(max_length=50)
     username = models.CharField(max_length=50, unique=True)
     email = models.CharField(max_length=100, unique=True)
-    phone_number = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=50, unique=True)
 
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_superadmin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
@@ -69,6 +72,7 @@ class Blog(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     content = models.ImageField(upload_to='blogs')
+    private = models.BooleanField(default=False)
     creation_data = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
